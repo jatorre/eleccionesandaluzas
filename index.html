@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mapa Andalucía - Elecciones autonómicas 2012</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style>
+ html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow:hidden;
+      }
+
+      #map_canvas {background:#F0F0F0; top: 40px; }
+      #loader {
+      width:200px;
+      padding:10px;
+      position:absolute;
+      top: 50px;
+      z-index:1000;
+      margin:auto;
+      margin-left:-100px;
+      left:50%;
+      }
+      #legend {
+          background:#FFF;
+          width:200px;
+          padding:10px;
+          position:absolute;
+          top: 50px;
+          z-index:1000;
+          margin:auto;
+          margin-left:-100px;
+          right:0;
+          display:none;
+      }
+
+    </style>
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+
+
+  <link href="css/leaflet.css" rel="stylesheet" type="text/css" />
+  <link href="css/leaflet.ie.css" rel="stylesheet" type="text/css" />
+  <link  href="css/cartodb.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="js/leaflet.js"></script>
+  <script type="text/javascript" src="js/wax.leaflet.min.js"></script>
+  <script type="text/javascript" src="js/cartodb-leaflet.js"></script>
+
+  <script type="text/javascript">
+  	var cartodb_leaflet1
+  		, cartodb_leaflet2;
+    var map;
+	  function initialize() {
+  			map = new L.Map('map_canvas').setView(new L.LatLng(37.26312408340919,-4.66094970703125), 8);
+
+
+
+  	    cartodb_leaflet2 = new L.CartoDBLayer({
+  	      map_canvas: 'map_canvas',
+  	      map: map,
+  	      user_name:"viz2",
+  	      table_name: 'andalucia',
+  	      infowindow: false,
+  	      query: "SELECT * FROM {{table_name}}",
+  	      interactivity: ["info"],
+  	      auto_bound: false,
+  	      debug: false
+  	    });
+		
+
+	  }
+	  
+	  function openfeature(feature) {
+	      alert("sddsd");
+	  }
+  </script>
+
+  </head>
+
+<body onload="initialize()">
+  
+    <div id="map_canvas"></div>
+
+  <div id="legend">
+      <h2 id="provincia">Granada</h2>
+      <h3 id="municipio">Roquetas del mar</h3><br>
+      <b id="primer_partido">PP</b> - <span id="votos_1">2323</span> votos (<span id="percen_1">56</span>%)<br>
+      <b id="segundo_partido">PSOE</b> - <span id="votos_2">123</span> votos (<span id="percen_2">30</span>%)<br>
+      <b id="tercer_partido">IUE_LVASD</b> - <span id="votos_3">22</span> votos (<span id="percen_3">2</span>%)<br>
+      
+ </div>
+  
+  <a class="cartodb_logo" href="http://www.cartodb.com" target="_blank">CartoDB</a>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Andalucía - Elecciones autonómicas 2012 </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Mapa</a></li>
+              <li><a href="#myModal "data-toggle="modal" id="about">Acerca</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+<div id="myModal" class="modal hide fade">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Acerca de este mapa...</h3>
+  </div>
+  <div class="modal-body">
+<p>Los datos de este mapa han sido sacados de <a href="http://resultados-elecciones.rtve.es/andalucia/municipios">rtve.es</a>, ya que ha sido imposible encontrar una fuente donde descargar los datos la noche electoral.<br><br>
+    Puedes descargar todos los datos en un <a href="http://vizzuality.s3.amazonaws.com/andalucia_map/andalucia_shp.zip">shapefile</a>,<a href="http://vizzuality.s3.amazonaws.com/andalucia_map/andalucia.kmz">KML</a>, <a href="http://vizzuality.s3.amazonaws.com/andalucia_map/andalucia.csv.zip">CSV</a>, o bien utilizar la <a href="http://viz2.cartodb.com/api/v1/sql?q=SELECT%20*%20from%20andalucia" target="_blank">API de CartoDB</a>.<br><br>
+    Si quieres, tambien puedes embedder este mapa en tu página web usando el siguiente código:<br><br>
+    <code>
+        &lt;iframe width=&quot;950&quot; height=&quot;500&quot; frameborder=&quot;0&quot; src=&#39;http://vizzuality.s3.amazonaws.com/andalucia_map/embed.html&#39; /&gt;
+        </code>
+    
+    <br><br>
+    Este mapa utiliza <a href="http://www.cartodb.com">CartoDB</a> para crear los mapas, y <a href="http://leaflet.cloudmade.com/">Leaflet</a> para visualizarlos. Ha sido realizado por <a href="https://twitter.com/#!/jatorre/">@jatorre</a>, si tienes alguna duda contactame via Twitter.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" >Close</a>
+  </div>
+</div>
+
+
+    <div class="container">
+    </div> <!-- /container -->
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-tab.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-20934186-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+</body>
+</html>
+
