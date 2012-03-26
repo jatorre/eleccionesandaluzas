@@ -62,32 +62,129 @@
   <script type="text/javascript" src="js/cartodb-leaflet.js"></script>
 
   <script type="text/javascript">
-  	var cartodb_leaflet1
-  		, cartodb_leaflet2;
+    var cartodb_leaflet1
+      , cartodb_leaflet2;
     var map;
-	  function initialize() {
-  			map = new L.Map('map_canvas').setView(new L.LatLng(37.26312408340919,-4.66094970703125), 8);
 
+    function create_polygons(ready) {
+        var polygons =  {};
+        var polygons_url = 'https://viz2.cartodb.com/api/v2/sql?q=select name_2,name_4, ST_Simplify(the_geom, 0.005) as the_geom from andalucia&format=geojson';
+        $.getJSON(polygons_url, function(data) {
+            var geojson = new L.GeoJSON();
+            var features = data.features;
+            for (var i = 0, len = features.length; i < len; ++i) {
+              var pol = new Object();
+              var geo = L.GeoJSON.geometryToLayer(features[i].geometry);
+              geo.setStyle({
+                weight: 4,
+                color: '#FFFFFF',
+                opacity: 1,
+                fillColor: '#FFFFFF',
+                fillOpacity: 0.1
+              });
+              pol.geo = geo;
+              pol.prop = features[i].properties;
+              var key = features[i].properties.name_2 + "_" + features[i].properties.name_4;
 
+              if(polygons[key]) {
+                polygons[key].push(pol);
+              } else {
+                polygons[key] = [pol];
+              }
 
-  	    cartodb_leaflet2 = new L.CartoDBLayer({
-  	      map_canvas: 'map_canvas',
-  	      map: map,
-  	      user_name:"viz2",
-  	      table_name: 'andalucia',
-  	      infowindow: false,
-  	      query: "SELECT * FROM {{table_name}}",
-  	      interactivity: ["info"],
-  	      auto_bound: false,
-  	      debug: false
-  	    });
-		
+            }
+            ready(polygons);
+        });
+        
+    }
 
-	  }
-	  
-	  function openfeature(feature) {
-	      alert("sddsd");
-	  }
+    function init_map(polygons) {
+        var current_polygon = null; 
+        map = new L.Map('map_canvas').setView(new L.LatLng(37.26312408340919,-4.66094970703125), 8);
+
+        var legend = {
+          out: function() {
+              $('div.over').hide();
+              $('body').css({cursor:'default'});
+              $("#legend").hide();
+          },
+
+          over: function(feature, div, opt3, evt){
+            $('div.over').text(feature).show();
+            $('div.over').tooltip('show')
+            featureAttributes = feature.split(":");
+            
+            //["Jaén", "Pozo Alcón", "PSOE", "PP", "IULV-CA", "45.24", "43.23", "4.81", "1127", "1077", "120"]
+            $("#provincia").text(featureAttributes[0]);
+            $("#municipio").text(featureAttributes[1]);
+            $("#primer_partido").text(featureAttributes[2]);
+            $("#segundo_partido").text(featureAttributes[3]);
+            $("#tercer_partido").text(featureAttributes[4]);
+            $("#percen_1").text(featureAttributes[5]);
+            $("#percen_2").text(featureAttributes[6]);
+            $("#percen_3").text(featureAttributes[7]);
+            $("#votos_1").text(featureAttributes[8]);
+            $("#votos_2").text(featureAttributes[9]);
+            $("#votos_3").text(featureAttributes[10]);
+            $("#legend").show();
+        }
+      }
+
+      // options to control events on geometries
+      var waxOptions = {
+          callbacks: {
+            out: function(){
+                $('body').css({cursor:'default'});
+                if(current_polygon) {
+                  for(var i=0; i < current_polygon.length; ++i) {
+                    map.removeLayer(current_polygon[i].geo);
+                  }
+                  current_polygon = null;
+                }
+                legend.out();
+            },
+            over: function(feature, div, opt3, evt){
+                legend.over(feature, div, opt3, evt);
+                $('body').css({cursor:'pointer'});
+                var key = feature.split(':').slice(0, 2).join('_');
+                current_polygon = polygons[key];
+                for(var i=0; i < current_polygon.length; ++i) {
+                    map.addLayer(current_polygon[i].geo);
+                }
+            },
+            click: function(feature, div, op3, evt) {
+            }
+          },
+      };
+
+        cartodb_leaflet2 = new L.CartoDBLayer({
+          map_canvas: 'map_canvas',
+          map: map,
+          user_name:"viz2",
+          table_name: 'andalucia',
+          infowindow: false,
+          query: "SELECT * FROM {{table_name}}",
+          interactivity: ["info"],
+          auto_bound: false,
+          debug: false,
+          waxOptions: waxOptions
+        });
+
+    }
+
+    /**
+     * init the app
+     */
+    function initialize() {
+      // ask for the data first, when it is ready the map can be initializated
+      create_polygons(function(vector_polygons) {
+          init_map(vector_polygons);
+      });
+    }
+    
+    function openfeature(feature) {
+        alert("sddsd");
+    }
   </script>
 
   </head>
