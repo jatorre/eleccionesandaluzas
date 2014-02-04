@@ -21,7 +21,7 @@
         overflow:hidden;
       }
 
-      #map_canvas {background:#F0F0F0; top: 40px; }
+      #map_canvas {background:#D8DEE6; top: 40px; }
       #loader {
       width:200px;
       padding:10px;
@@ -63,7 +63,8 @@
 
   <script type="text/javascript">
     var cartodb_leaflet1
-      , cartodb_leaflet2;
+      , cartodb_leaflet2
+      , cartodb_leaflet3;
     var map;
 
     function create_polygons(ready) {
@@ -76,11 +77,11 @@
               var pol = new Object();
               var geo = L.GeoJSON.geometryToLayer(features[i].geometry);
               geo.setStyle({
-                weight: 4,
+                weight: 3,
                 color: '#FFFFFF',
                 opacity: 1,
                 fillColor: '#FFFFFF',
-                fillOpacity: 0.1
+                fillOpacity: 0.3
               });
               pol.geo = geo;
               pol.prop = features[i].properties;
@@ -157,6 +158,19 @@
           },
       };
 
+  	    cartodb_leaflet1 = new L.CartoDBLayer({
+  	      map_canvas: 'map_canvas',
+  	      map: map,
+  	      user_name:"viz2",
+  	      table_name: 'prov_esp',
+  	      infowindow: false,
+  	      query: "SELECT * FROM {{table_name}}",
+  	      tile_style: "#{{table_name}}{polygon-opacity:1;polygon-fill:#f9f9f9;}",
+  	      auto_bound: false,
+  	      debug: false
+  	    });
+
+
         cartodb_leaflet2 = new L.CartoDBLayer({
           map_canvas: 'map_canvas',
           map: map,
@@ -169,6 +183,17 @@
           debug: false,
           waxOptions: waxOptions
         });
+        
+        cartodb_leaflet3 = new L.CartoDBLayer({
+          map_canvas: 'map_canvas',
+          map: map,
+          user_name:"viz2",
+          table_name: 'prov_esp',
+          query: "SELECT * FROM {{table_name}}",         
+          infowindow: false,
+          auto_bound: false,
+          debug: false
+        });        
 
     }
 
